@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name = 'humble_rpi-plugin-dhtsensor'
-  s.version = '0.1.0'
+  s.version = '0.1.1'
   s.summary = 'A Humble RPi plugin to read the ambient temperature and humidity from the DHT sensor.'
   s.authors = ['James Robertson']
   s.files = Dir['lib/humble_rpi-plugin-dhtsensor.rb']

@@ -22,7 +22,8 @@ class HumbleRPiPluginDhtSensor
       temperature_threshold: 1,
       humidity_threshold: 2,
       interval: 3,
-      msg_format: "%s/dht11_sensor: temperature: %s humidity: %s"
+      msg_format: "%s/dht11_sensor: temperature: %s humidity: %s",
+      pushrate: 60
     }.merge settings
     
     @version = h[:version]
@@ -30,6 +31,7 @@ class HumbleRPiPluginDhtSensor
     @humidity_threshold = h[:humidity_threshold]
     @interval = h[:interval]
     @msg_format = h[:msg_format]
+    @pushrate = h[:pushrate]
     
     @notifier = variables[:notifier]
     @device_id = variables[:device_id] || 'pi'
@@ -42,14 +44,17 @@ class HumbleRPiPluginDhtSensor
     
     val = DhtSensor.read(@pin, @version)
     push val
+    last_push = Time.now
     
     loop do
       
-    val = DhtSensor.read(@pin, @version)
+      val = DhtSensor.read(@pin, @version)
 
-      if (@old_tval - val.temperature).abs >= @temperature_threshold or \
-                     (@old_hval - val.humidity).abs >= @humidity_threshold then
+      if last_push + @pushrate < Time.now and \
+            ((@old_tval - val.temperature).abs >= @temperature_threshold or \
+                    (@old_hval - val.humidity).abs >= @humidity_threshold) then
         push val
+        last_push = Time.now
       end      
 
       sleep @interval
